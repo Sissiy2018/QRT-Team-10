@@ -1,9 +1,17 @@
-import pandas as pd
-import numpy as np
+import sys
 import os
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as pl
+import numpy as np
+import pandas as pd
 
-# Import the classes we wrote above
+# Get the absolute path of the current directory
+current_dir = '/Users/giladfibeesh/Documents/Python/QRT-Team-10/QRT-Team-10'
+
+# Add it to the system path so Python knows to look here for modules
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
+
+# Now your imports should work!
 from preprocessing import DataProcessor
 from signals import Momentum12_1M
 from portfolio import PortfolioConstructor
@@ -19,17 +27,26 @@ def main():
     DIV_TAX = 0.30
 
     # Define file paths (adjust to your local paths)
+    # Define file paths (adjust to your local paths)
     path = '.' 
     file_paths = [
-        os.path.join(path, 'hist_data', 'data_1.csv'),
-        # add other files here...
+        os.path.join(path, 'hist_data', 'lseg_historyprice_data_20170522_to_20151208_ADVfiltered.csv'),
+        os.path.join(path, 'hist_data', 'lseg_historyprice_data_20181102_to_20170522_ADVfiltered.csv'),
+        os.path.join(path, 'hist_data', 'lseg_historyprice_data_20200420_to_20181102_ADVfiltered.csv'),
+        os.path.join(path, 'hist_data', 'lseg_historyprice_data_20210930_to_20200420_ADVfiltered.csv'),
+        os.path.join(path, 'hist_data', 'lseg_historyprice_data_20240828_to_20230320_ADVfiltered.csv'),
+        os.path.join(path, 'hist_data', 'lseg_historyprice_data_20260214_to_20240829.csv'),
     ]
+    benchmark_file = os.path.join(path, 'hist_data', 'lseg_historyprice_S&P500_20260215_to_20151209.csv') # <-- Add this
 
     # --- 2. Data Preprocessing ---
     print("Processing Data...")
     processor = DataProcessor(benchmark_ticker=BENCHMARK)
-    price_close, price_ret, tot_ret, div_ret, volume_usd = processor.load_and_pivot(file_paths)
     
+    # Pass the benchmark file as the second argument
+    price_close, price_ret, tot_ret, div_ret, volume_usd = processor.load_and_pivot(
+        file_paths, benchmark_file
+    )
     # Impute and clean
     price_close_imp, price_ret_imp = processor.impute_missing(price_close)
     tot_ret_imp = tot_ret.fillna(0) 
