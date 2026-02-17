@@ -15,16 +15,20 @@ class PortfolioConstructor:
         longs = sig_t.nlargest(top_n).index
         shorts = sig_t.nsmallest(top_n).index
 
-        # Equal Risk Weighting (Inverse Volatility)
+        # --- NEW: Signal-Weighted Risk Weighting ---
         vols = np.sqrt(np.diag(cov_matrix.loc[sig_t.index, sig_t.index]))
         vol_series = pd.Series(vols, index=sig_t.index)
         
         raw_weights = pd.Series(0.0, index=sig_t.index)
-        long_inv_vols = 1.0 / vol_series[longs]
-        short_inv_vols = 1.0 / vol_series[shorts]
         
-        raw_weights[longs] = long_inv_vols / long_inv_vols.sum()
-        raw_weights[shorts] = -short_inv_vols / short_inv_vols.sum()
+        # Multiply inverse volatility by the absolute signal strength
+        long_signal_risk = sig_t[longs].abs() / vol_series[longs]
+        short_signal_risk = sig_t[shorts].abs() / vol_series[shorts]
+        
+        # Normalize so longs sum to 100% and shorts sum to -100% (before vol scaling)
+        raw_weights[longs] = long_signal_risk / long_signal_risk.sum()
+        raw_weights[shorts] = -short_signal_risk / short_signal_risk.sum()
+        # ------------------------------------------
 
         # Initial Volatility Scaling
         port_vol = np.sqrt(raw_weights.T @ cov_matrix.loc[sig_t.index, sig_t.index] @ raw_weights)
@@ -33,6 +37,8 @@ class PortfolioConstructor:
 
         # Iterative Liquidity Constraints & Redistribution
         max_pos = adv_60d.loc[sig_t.index] * self.max_adv_pct
+        #make sure max_pos dont excceed 2000000 in size
+        max_pos = max_pos.clip(upper=2000000, lower=-2000000)
         unconstrained = set(longs).union(set(shorts))
         
         for _ in range(10): # Max iterations to prevent infinite loops

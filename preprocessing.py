@@ -54,11 +54,14 @@ class DataProcessor:
         return price_close, price_ret, tot_ret, div_ret, volume_usd
 
     def impute_missing(self, price_close):
-        """Forward fills prices. Missing returns become 0."""
-        price_close_imputed = price_close.ffill()
+        """Forward fills prices up to a maximum of 5 days. Missing returns become 0."""
+        # --- ADD LIMIT=5 HERE ---
+        # If a stock doesn't trade for a week, it reverts to NaN and drops out of the optimizer
+        price_close_imputed = price_close.ffill(limit=5) 
+        
         price_ret_imputed = price_close_imputed.pct_change().fillna(0)
         return price_close_imputed, price_ret_imputed
-
+    
     def clean_outliers(self, returns_df, window=60, threshold=3.5):
         """Shrinks returns > 3.5 standard deviations from 0."""
         roll_std = returns_df.rolling(window=window, min_periods=10).std()
