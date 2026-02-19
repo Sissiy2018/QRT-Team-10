@@ -74,4 +74,25 @@ class DataProcessor:
         hedged_returns = tot_ret_clean.sub(betas.mul(bench_price_ret, axis=0), fill_value=0)
         
         return betas, hedged_returns
+    
+    def load_and_pivot_pe(self, file_paths):
+        """Loads daily PE CSVs, pivots them, and calculates Earnings Yield."""
+        df_list = [pd.read_csv(f) for f in file_paths]
+        raw_df = pd.concat(df_list, ignore_index=True)
+        raw_df['Date'] = pd.to_datetime(raw_df['Date'])
+        
+        # Sort and drop duplicates
+        raw_df = raw_df.sort_values(by=['Date', 'RIC'])
+        raw_df = raw_df.drop_duplicates(subset=['Date', 'RIC'], keep='last')
 
+        # Pivot to time series
+        pe_df = raw_df.pivot(index='Date', columns='RIC', values='Price to Earning')
+        
+        # Forward fill missing days (fundamentals don't update every day)
+        pe_df = pe_df.ffill()
+        
+        # Convert to Earnings Yield (1 / PE) to stabilize outliers
+        # Replace 0s with NaN temporarily to avoid division by zero
+        ey_df = 1 / pe_df.replace(0, np.nan)
+        
+        return pe_df, ey_df
