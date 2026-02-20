@@ -31,7 +31,7 @@ BENCHMARK = 'SPX'
 REBALANCE_FREQ_DAYS = 2
 TARGET_ANN_VOL = 500000
 MAX_ADV_PCT = 0.025
-TCOST_BPS = 0
+TCOST_BPS = 3
 DIV_TAX = 0.30
 
 # Define file paths
@@ -44,7 +44,7 @@ file_paths = [
     os.path.join(path, 'lseg_historyprice_data_20230319_to_20210930_ADVfiltered.csv'),
     os.path.join(path, 'lseg_historyprice_data_20240828_to_20230320_ADVfiltered.csv'),
     os.path.join(path, 'lseg_historyprice_data_20260214_to_20240829.csv'),
-    os.path.join(os.path.join('.', 'Hist_data_Russel3000', 'Daily_new_data'), 'lseg_historyprice_data_20260218_to_20260213_ADVfiltered.csv')
+    os.path.join(os.path.join('.', 'Hist_data_Russel3000', 'Daily_new_data'), 'lseg_historyprice_data_20260219_to_20260212_ADVfiltered.csv')
 ]
 
 # --- 2. Data Preprocessing ---
@@ -83,10 +83,10 @@ pe_file_paths = [
     os.path.join(path, 'lseg_Price-Earning_data_20181102_to_20170522_ADVfiltered.csv'),
     os.path.join(path, 'lseg_Price-Earning_data_20181102_to_20170522_ADVfiltered.csv'),
     os.path.join(path, 'lseg_Price-Earning_data_20200420_to_20181102_ADVfiltered.csv'),
-    os.path.join(path, 'Lseg_Price-Earning_data_20200420_to_20210930_ADVfiltered.csv'),
-    os.path.join(path, 'Lseg_Price-Earning_data_20211001_to_20230320_ADVfiltered.csv'),
-    os.path.join(path, 'Lseg_Price-Earning_data_20211001_to_20230320_ADVfiltered.csv'),
-    os.path.join(os.path.join('.', 'Hist_data_Russel3000', 'Daily_new_data'), 'lseg_Price-Earning_data_0260218_to_20260213_ADVfiltered.csv')
+    os.path.join(path, 'lseg_Price-Earning_data_20200420_to_20210930_ADVfiltered.csv'),
+    os.path.join(path, 'lseg_Price-Earning_data_20211001_to_20230320_ADVfiltered.csv'),
+    os.path.join(path, 'lseg_Price-Earning_data_20260215_to_20230321_ADVfiltered.csv'),
+    os.path.join(os.path.join('.', 'Hist_data_Russel3000', 'Daily_new_data'), 'lseg_historyprice_data_20260219_to_20260212_ADVfiltered.csv')
 ]
 
 # Load and process
